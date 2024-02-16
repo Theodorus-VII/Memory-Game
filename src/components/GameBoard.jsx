@@ -1,6 +1,7 @@
 import { pokemonNames } from "./pokemon_names";
 import { useState, useEffect } from "react";
 import Card from "./Card";
+import "../styles/board.css";
 
 export default function GameBoard() {
   const [pokemonData, setPokemonData] = useState([]);
@@ -8,13 +9,16 @@ export default function GameBoard() {
     history: [],
     bestScore: 0,
     currentScore: 0,
-  }); //history, best score and current score
+  });
+  const [cardsShowing, setCardsShowing] = useState(true);
 
   // first needs to fetch the pokemons from the server. will need their names and images then.
+
   useEffect(() => {
+    // runs onMount
     async function loadPokemonData() {
+      // fetch the data from the server.
       const promises = pokemonNames.map(async (pokemon) => {
-        // fetch the data from the server.
         const response = await fetch(
           `https://pokeapi.co/api/v2/pokemon/${pokemon.toLowerCase()}`
         );
@@ -27,13 +31,11 @@ export default function GameBoard() {
           sprite: sprite_url,
         };
       });
-
       const resolvedData = await Promise.all(promises);
       setPokemonData(resolvedData);
     }
     loadPokemonData();
   }, []);
-
 
   function shuffleArray(array) {
     // Fisher-Yates Sorting Algorithm.
@@ -46,8 +48,13 @@ export default function GameBoard() {
     return copiedArray;
   }
 
-  function handleClick(id) {
+  async function handleClick(id) {
     // declare variables for the state object.
+    setCardsShowing(false);
+    setTimeout(() => {
+      setCardsShowing(true);
+    }, 300);
+
     let newCurrentScore;
     let newHistory;
     let newBestScore;
@@ -70,34 +77,36 @@ export default function GameBoard() {
         newBestScore = newCurrentScore;
       }
     }
-
-    // now that we have the new values, update the state object.
     setScoreBoard({
       history: newHistory,
       currentScore: newCurrentScore,
       bestScore: newBestScore,
     });
 
-    // randomize the pokemonData array.
-    setPokemonData((prevPokemonData) => {
-      const shuffledData = shuffleArray([...prevPokemonData]);
-      return shuffledData;
-    });
+    setTimeout(() => {
+      // randomize the pokemonData array for the next go.
+      setPokemonData((prevPokemonData) => {
+        const shuffledData = shuffleArray([...prevPokemonData]);
+        return shuffledData;
+      });
+      // this way triggers a re-render, which stops some of the flip animations(random).
+    }, 1);
+    clearTimeout();
+    // now that we have the new values, update the state object.
   }
 
   return (
     <>
-      <div>
-        <div>ScoreBoard</div>
-        <div>
-          current score: {scoreBoard.currentScore}
-          best score: {scoreBoard.bestScore}
-        </div>
-      </div>
-      <div>THE cards go here</div>
+      {/* <div>THE cards go here</div> */}
       <div className="gameboardContainer">
-        {pokemonData.map((pokemon) => (
-          <Card key={pokemon.id} {...pokemon} handleClick={handleClick} />
+        {pokemonData.map((pokemon, index) => (
+          <Card
+            key={pokemon.id}
+            {...pokemon}
+            cardsShowing={cardsShowing}
+            handleClick={handleClick}
+            animationKey={`${index} - ${pokemon.id}`}
+          />
         ))}
       </div>
     </>
