@@ -10,20 +10,7 @@
   transform-origin: center;
   transform-style: preserve-3d;
   cursor: pointer;
-}
-
-
-.card.card-flip {
-  transform: rotateY(180deg) 
-}
-
-.card-face {
-  position: absolute;
-  height: 100%;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  backface-visibility: hidden;
+  color: black;
 }
 
 .card-back {
@@ -36,8 +23,27 @@
   transform: rotateY(180deg);
 }
 
-.card:hover {
-  transform: scale(1.1);
+.card-face {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  backface-visibility: hidden;
+  transition: transform 1s ease-in-out;
+}
+
+.card-title{
+  background-color: black;
+  margin: 0;
+  padding: 0;
+  flex-grow: 1;
+  color: white;
+}
+
+.card:hover > .card-face{
+  transform: scale(1.05);
+  outline: 5px solid black;
 }
 
 .tilt {
@@ -46,7 +52,6 @@
 }
 
 .card-face img {
-  background-color: aqua;
   margin: 0;
 }
 
@@ -54,4 +59,30 @@
   background-color: lime;
 }
 
+.card.card-face-front{
+  animation: resetFlipCard 1s both;
+}
+
+.card.card-face-back{
+  animation: flipCard 1s both;
+  pointer-events: none;
+}
+
+
+@keyframes flipCard {
+  from{
+    transform: rotateY(0deg);
+  }
+  to{
+    transform: rotateY(180deg);
+  }
+}
+@keyframes resetFlipCard {
+  from{
+    transform: rotateY(180deg);
+  }
+  to{
+    transform: rotateY(0deg);
+  }
+}
 
