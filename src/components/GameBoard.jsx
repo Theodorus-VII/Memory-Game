@@ -10,7 +10,7 @@ export default function GameBoard() {
     bestScore: 0,
     currentScore: 0,
   });
-  const [modalOpen, setModalOpen] = useState(true);
+  const [modalOpen, setModalOpen] = useState(false);
 
   function updateScoreBoard(id) {
     let newCurrentScore;
